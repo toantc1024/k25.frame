@@ -114,7 +114,7 @@ export default function ImageUploader({ onImageLoaded }) {
                         onCropChange={setCrop}
                         onZoomChange={setZoom}
                         onCropComplete={onCropComplete}
-                        cropShape="round"
+                        cropShape="rect"
                     />
                 </div>
                 <Slider

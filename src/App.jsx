@@ -24,11 +24,11 @@ export default function ImageFrameOverlay() {  // State management
   const [avatarCanvasSize, setAvatarCanvasSize] = useState({ width: 0, height: 0 });
   const [renderer, setRenderer] = useState(null);
 
-  // Image customization settings
+  // Image customization settings - Updated for 2000x2000 avatar frame
   const [squareImageSettings, setSquareImageSettings] = useState({
-    x: 375,
-    y: 375,
-    size: 3000
+    x: 250,  // Centered horizontally: (2000 - 1500) / 2 = 250
+    y: 250,  // Centered vertically: (2000 - 1500) / 2 = 250  
+    size: 1500  // Size that fits well within 2000x2000 frame
   });
 
   // Load frame images
@@ -127,7 +127,7 @@ export default function ImageFrameOverlay() {  // State management
     <div className="blue-theme-background" style={{
       background: 'linear-gradient(135deg, #E6F3FF 0%, #F0E6FF 50%, #CCE7FF 100%)',
       padding: '2rem 0',
-      minHeight: '40vh'
+      minHeight: '60vh'
     }}>
       <Container size="xl" py="xl" className="blue-theme-container">
         <Grid gutter="md">
@@ -162,6 +162,8 @@ export default function ImageFrameOverlay() {  // State management
                 formData={{}}
                 canvasSize={avatarCanvasSize}
                 title="Ảnh Avatar"
+                imageSettings={squareImageSettings}
+                onImageSettingsChange={setSquareImageSettings}
               />
             </div>
           </Grid.Col>

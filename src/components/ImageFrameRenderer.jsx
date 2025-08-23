@@ -30,13 +30,25 @@ export default class ImageFrameRenderer {
         // Draw the image scaled and centered
         ctx.drawImage(image, x + offsetX, y + offsetY, scaledWidth, scaledHeight);
         ctx.restore();
-    } drawSquareImage(ctx, image, x, y, targetSize = 300) {
-        // Calculate scaling to fit the target size while maintaining aspect ratio
-        const scale = targetSize / Math.max(image.width, image.height);
-        const scaledWidth = image.width * scale;
-        const scaledHeight = image.height * scale;
+    }
 
-        // Center the image within the square
+    drawSquareImage(ctx, image, x, y, targetSize = 300) {
+        // Calculate scaling to fill the entire target area while maintaining aspect ratio
+        const imageAspectRatio = image.width / image.height;
+
+        let scaledWidth, scaledHeight;
+
+        if (imageAspectRatio > 1) {
+            // Image is wider than tall - scale by height
+            scaledHeight = targetSize;
+            scaledWidth = targetSize * imageAspectRatio;
+        } else {
+            // Image is taller than wide or square - scale by width
+            scaledWidth = targetSize;
+            scaledHeight = targetSize / imageAspectRatio;
+        }
+
+        // Center the image within the square area
         const offsetX = (targetSize - scaledWidth) / 2;
         const offsetY = (targetSize - scaledHeight) / 2;
 
@@ -46,10 +58,12 @@ export default class ImageFrameRenderer {
         ctx.closePath();
         ctx.clip();
 
-        // Draw the image scaled and centered
+        // Draw the image scaled to fill the area
         ctx.drawImage(image, x + offsetX, y + offsetY, scaledWidth, scaledHeight);
         ctx.restore();
-    } drawText(ctx, text, x, y, fillColor, centered = false, forcedScale = null, scale) {
+    }
+
+    drawText(ctx, text, x, y, fillColor, centered = false, forcedScale = null, scale) {
         const scaleToUse = forcedScale || scale;
         ctx.save();        // Setup shadow and basic styles
         ctx.shadowOffsetX = 2 * scaleToUse;
@@ -71,7 +85,9 @@ export default class ImageFrameRenderer {
         ctx.fillText(text, xPos, yPos);
 
         ctx.restore();
-    } drawFrameOnCanvas(canvas, uploadedImg, uploadedImgLoaded, formData, canvasSize, imageSettings = { x: 610, y: 868, size: 2655 }) {
+    }
+
+    drawFrameOnCanvas(canvas, uploadedImg, uploadedImgLoaded, formData, canvasSize, imageSettings = { x: 610, y: 868, size: 2655 }) {
         const ctx = canvas.getContext("2d", { alpha: true });
 
         if (!ctx) return;
@@ -122,7 +138,9 @@ export default class ImageFrameRenderer {
                 scale
             );
         }
-    } drawAvatarFrameOnCanvas(canvas, uploadedImg, uploadedImgLoaded, canvasSize, imageSettings = { x: 375, y: 375, size: 1200 }) {
+    }
+
+    drawAvatarFrameOnCanvas(canvas, uploadedImg, uploadedImgLoaded, canvasSize, imageSettings = { x: 375, y: 375, size: 1200 }) {
         const ctx = canvas.getContext("2d", { alpha: true });
 
         if (!ctx || !this.avatarFrame) return;
@@ -148,7 +166,9 @@ export default class ImageFrameRenderer {
         ctx.scale(scale, scale);
         ctx.drawImage(this.avatarFrame, 0, 0);
         ctx.restore();
-    }    // Create a high-resolution version of the image for download
+    }
+
+    // Create a high-resolution version of the image for download
     createHighResolutionImage(uploadedImg, uploadedImgLoaded, formData, imageSettings = { x: 610, y: 868, size: 2655 }) {
         return new Promise((resolve, reject) => {
             try {
@@ -203,7 +223,9 @@ export default class ImageFrameRenderer {
                 reject(error);
             }
         });
-    }    // Create a high-resolution version of the avatar image for download
+    }
+
+    // Create a high-resolution version of the avatar image for download
     createHighResolutionAvatarImage(uploadedImg, uploadedImgLoaded, imageSettings = { x: 375, y: 375, size: 1200 }) {
         return new Promise((resolve, reject) => {
             try {
