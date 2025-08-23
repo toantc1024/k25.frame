@@ -24,15 +24,19 @@ export default function CanvasPreview({
         }
     }, [frameLoaded, uploadedImgLoaded, formData, canvasSize, drawFrame, imageSettings]);
 
-    // Get mouse position relative to canvas
+    // Get mouse/touch position relative to canvas
     const getMousePos = useCallback((canvas, e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
         const scaleY = canvas.height / rect.height;
 
+        // Handle touch events
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
         return {
-            x: (e.clientX - rect.left) * scaleX,
-            y: (e.clientY - rect.top) * scaleY
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
         };
     }, []);
 
@@ -56,9 +60,17 @@ export default function CanvasPreview({
         return distance <= radius;
     }, [imageSettings, frame]);
 
-    // Mouse event handlers
+    // Mouse/Touch event handlers
     const handleMouseDown = useCallback((e) => {
         if (!uploadedImgLoaded || !canvasRef.current || !onImageSettingsChange) return;
+
+        // For touch events, only proceed if it's a single touch
+        if (e.touches && e.touches.length !== 1) return;
+
+        // Prevent default touch behavior
+        if (e.touches) {
+            e.preventDefault();
+        }
 
         const mousePos = getMousePos(canvasRef.current, e);
 
@@ -72,6 +84,14 @@ export default function CanvasPreview({
 
     const handleMouseMove = useCallback((e) => {
         if (!canvasRef.current) return;
+
+        // For touch events, only proceed if it's a single touch
+        if (e.touches && e.touches.length !== 1) return;
+
+        // Prevent default touch behavior
+        if (e.touches) {
+            e.preventDefault();
+        }
 
         const mousePos = getMousePos(canvasRef.current, e);
 
@@ -100,7 +120,12 @@ export default function CanvasPreview({
         }
     }, [isDragging, dragStart, initialImagePos, imageSettings, frame, getMousePos, isMouseOverImage, uploadedImgLoaded, onImageSettingsChange]);
 
-    const handleMouseUp = useCallback(() => {
+    const handleMouseUp = useCallback((e) => {
+        // Prevent default touch behavior
+        if (e.touches || e.changedTouches) {
+            e.preventDefault();
+        }
+
         setIsDragging(false);
         if (canvasRef.current) {
             canvasRef.current.style.cursor = 'default';
@@ -112,31 +137,60 @@ export default function CanvasPreview({
         const canvas = canvasRef.current;
         if (!canvas) return;
 
+        // Mouse events
         canvas.addEventListener('mousedown', handleMouseDown);
         canvas.addEventListener('mousemove', handleMouseMove);
         canvas.addEventListener('mouseup', handleMouseUp);
         canvas.addEventListener('mouseleave', handleMouseUp);
+
+        // Touch events
+        canvas.addEventListener('touchstart', handleMouseDown, { passive: false });
+        canvas.addEventListener('touchmove', handleMouseMove, { passive: false });
+        canvas.addEventListener('touchend', handleMouseUp, { passive: false });
+        canvas.addEventListener('touchcancel', handleMouseUp, { passive: false });
+
+        // Prevent context menu on long press
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 
         return () => {
             canvas.removeEventListener('mousedown', handleMouseDown);
             canvas.removeEventListener('mousemove', handleMouseMove);
             canvas.removeEventListener('mouseup', handleMouseUp);
             canvas.removeEventListener('mouseleave', handleMouseUp);
+
+            canvas.removeEventListener('touchstart', handleMouseDown);
+            canvas.removeEventListener('touchmove', handleMouseMove);
+            canvas.removeEventListener('touchend', handleMouseUp);
+            canvas.removeEventListener('touchcancel', handleMouseUp);
+            canvas.removeEventListener('contextmenu', (e) => e.preventDefault());
         };
     }, [handleMouseDown, handleMouseMove, handleMouseUp]);
 
-    // Handle zoom changes
-    const handleZoomChange = useCallback((value) => {
+    // Handle zoom changes - now working with percentages
+    const handleZoomChange = useCallback((percentage) => {
         if (onImageSettingsChange && imageSettings) {
+            // Convert percentage to actual pixel size
+            // 100% = 1444 (default), range from 50% (722px) to 100% (1444px)
+            const actualSize = Math.round((percentage / 100) * 1444);
             onImageSettingsChange({
                 ...imageSettings,
-                size: value
+                size: actualSize
             });
         }
     }, [onImageSettingsChange, imageSettings]);
 
+    // Convert current size to percentage for display
+    const getCurrentPercentage = useCallback(() => {
+        if (!imageSettings?.size) return 100;
+        return Math.round((imageSettings.size / 1444) * 100);
+    }, [imageSettings?.size]);
+
     return (
-        <Paper p="md" style={{ width: "100%", overflow: "hidden" }}>
+        <Paper p="md" style={{
+            width: "100%",
+            overflow: "hidden",
+            touchAction: "pan-y" // Allow vertical scrolling but prevent zoom
+        }}>
             {title && (
                 <Text size="lg" weight={700} align="center" mb="md">
                     {title}
@@ -151,7 +205,8 @@ export default function CanvasPreview({
                         display: "block",
                         margin: "0 auto",
                         cursor: "default",
-                        userSelect: "none"
+                        userSelect: "none",
+                        touchAction: "none" // Prevent default touch behaviors like zoom
                     }}
                 />
 
@@ -160,21 +215,22 @@ export default function CanvasPreview({
                     <Group grow p={"xl"}>
                         <div>
                             <Text size="sm" mb={5} align="center" weight={500}>
-                                Phóng to
+                                Phóng to: {getCurrentPercentage()}%
                             </Text>
                             <Slider
-                                value={imageSettings?.size || 1500}
+                                value={getCurrentPercentage()}
                                 onChange={handleZoomChange}
-                                min={800}
-                                max={2200}
-                                step={50}
+                                min={50}
+                                max={100}
+                                step={5}
                                 marks={[
-                                    { value: 800, label: 'Nhỏ nhất' },
-                                    { value: 1500, label: 'Mặc định' },
-                                    { value: 2200, label: 'Lớn nhất' }
+                                    { value: 50, label: '50%' },
+                                    { value: 75, label: '75%' },
+                                    { value: 100, label: '100%' }
                                 ]}
                                 size="md"
                                 color="blue"
+                                label={(value) => `${value}%`}
                             />
                         </div>
                     </Group>

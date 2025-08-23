@@ -16,15 +16,20 @@ export default function SuccessModal({ isOpen, onClose, imageUrl, fileName }) {
             size="sm"
         >
             <Stack spacing="md">
-                <div>Ảnh đã được tải xuống thành công!</div>
-                
+                <div style={{
+                    textAlign: 'center',
+                    fontSize: '1.1rem',
+                    fontWeight: '500',
+                    marginTop: '12px'
+                }}>Ảnh đã được tải xuống thành công!</div>
+
                 {imageUrl && (
                     <Text align="center" size="sm" color="dimmed" my="xs">
-                        <Anchor 
-                            href={imageUrl} 
+                        <Anchor
+                            href={imageUrl}
                             download={fileName}
                             target="_blank"
-                            style={{ 
+                            style={{
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
@@ -37,7 +42,7 @@ export default function SuccessModal({ isOpen, onClose, imageUrl, fileName }) {
                         </Anchor>
                     </Text>
                 )}
-                
+
                 <Button
                     onClick={onClose}
                     fullWidth

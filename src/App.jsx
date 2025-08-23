@@ -24,11 +24,11 @@ export default function ImageFrameOverlay() {  // State management
   const [avatarCanvasSize, setAvatarCanvasSize] = useState({ width: 0, height: 0 });
   const [renderer, setRenderer] = useState(null);
 
-  // Image customization settings - Updated for 2000x2000 avatar frame
+  // Image customization settings - Updated for frame specifications
   const [squareImageSettings, setSquareImageSettings] = useState({
-    x: 250,  // Centered horizontally: (2000 - 1500) / 2 = 250
-    y: 250,  // Centered vertically: (2000 - 1500) / 2 = 250  
-    size: 1500  // Size that fits well within 2000x2000 frame
+    x: 275,  // Top left X position as specified
+    y: 205,  // Top left Y position as specified  
+    size: 1444  // Circle size as specified
   });
 
   // Load frame images
