@@ -221,12 +221,13 @@ export default function CanvasPreview({
                                 value={getCurrentPercentage()}
                                 onChange={handleZoomChange}
                                 min={50}
-                                max={100}
+                                max={125}
                                 step={5}
                                 marks={[
                                     { value: 50, label: '50%' },
                                     { value: 75, label: '75%' },
-                                    { value: 100, label: '100%' }
+                                    { value: 100, label: '100%' },
+                                    { value: 125, label: '125%' }
                                 ]}
                                 size="md"
                                 color="blue"

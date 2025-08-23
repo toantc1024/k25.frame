@@ -161,7 +161,7 @@ export default function ImageFrameOverlay() {  // State management
                 frameLoaded={avatarFrameLoaded}
                 formData={{}}
                 canvasSize={avatarCanvasSize}
-                title="Ảnh Avatar"
+                title=""
                 imageSettings={squareImageSettings}
                 onImageSettingsChange={setSquareImageSettings}
               />

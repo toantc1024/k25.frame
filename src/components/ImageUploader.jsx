@@ -87,7 +87,7 @@ export default function ImageUploader({ onImageLoaded }) {
                 style={{ display: "none" }}
                 accept="image/*"
             />            <Button
-                size="lg"
+                size="md"
                 radius="xl"
                 onClick={triggerFileInput}
                 fullWidth

@@ -32,7 +32,7 @@ export default function ImageDownloader({
         }
     }; return (
         <>            <Button
-            size="lg"
+            size="md"
             radius="xl"
             onClick={handleDownload}
             fullWidth

@@ -6,12 +6,8 @@ export default function HeaderContent() {
   return (
     <Box pb={0}>
       <header className={classes.header}>
-        <Group justify="space-between" h="100%">
-          <Group h="100%" gap={0} visibleFrom="sm"></Group>
-          <Group justify="center">
-            <Image src={LOGO} alt="LOGO" height={80} />
-          </Group>
-          <Group></Group>
+        <Group justify="center" h="100%">
+          <Image src={LOGO} alt="LOGO" height={80} />
         </Group>
       </header>
     </Box>
