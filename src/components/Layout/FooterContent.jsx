@@ -52,7 +52,7 @@ export default function FooterLinks() {
         textAlign: 'center',
         width: '100%'
       }}>
-        © 2025 Đoàn Thanh niên - Hội Sinh viên Trường ĐH Sư phạm Kỹ thuật TP. Hồ Chí Minh
+        © 2025 YHCMUTE
       </Text>
 
     </footer>
